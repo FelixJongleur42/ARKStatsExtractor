@@ -225,6 +225,7 @@ namespace ARKBreedingStats
             this.columnHeaderStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderTribe = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderStatusIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderScore = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.contextMenuStripLibrary = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.editAllSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -240,6 +241,7 @@ namespace ARKBreedingStats
             this.plainTextbreedingValuesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.forSpreadsheetToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.copyInfographicToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyColorCodesToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveInfographicsToFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
             this.removeCooldownGrowingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -312,6 +314,7 @@ namespace ARKBreedingStats
             this.ToolStripTextBoxLibraryFilter = new System.Windows.Forms.ToolStripTextBox();
             this.ToolStripButtonLibraryFilterClear = new System.Windows.Forms.ToolStripButton();
             this.panelToolBar = new System.Windows.Forms.Panel();
+            this.calcBreedingScoreButton = new System.Windows.Forms.Button();
             this.btImportLastExported = new System.Windows.Forms.Button();
             this.pbSpecies = new System.Windows.Forms.PictureBox();
             this.tbSpeciesGlobal = new ARKBreedingStats.uiControls.TextBoxSuggest();
@@ -415,7 +418,7 @@ namespace ARKBreedingStats
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.newToolStripMenuItem.Text = "&New Library";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -424,14 +427,14 @@ namespace ARKBreedingStats
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             this.loadToolStripMenuItem.ShortcutKeyDisplayString = "";
             this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.loadToolStripMenuItem.Text = "&Load...";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
             // loadAndAddToolStripMenuItem
             // 
             this.loadAndAddToolStripMenuItem.Name = "loadAndAddToolStripMenuItem";
-            this.loadAndAddToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.loadAndAddToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.loadAndAddToolStripMenuItem.Text = "Load and A&dd...";
             this.loadAndAddToolStripMenuItem.ToolTipText = "Select a library-file and add all its creatures to the currently loaded library";
             this.loadAndAddToolStripMenuItem.Click += new System.EventHandler(this.loadAndAddToolStripMenuItem_Click);
@@ -440,7 +443,7 @@ namespace ARKBreedingStats
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -449,45 +452,45 @@ namespace ARKBreedingStats
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.saveAsToolStripMenuItem.Text = "Save &as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(243, 6);
             // 
             // recentlyUsedToolStripMenuItem
             // 
             this.recentlyUsedToolStripMenuItem.Name = "recentlyUsedToolStripMenuItem";
-            this.recentlyUsedToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.recentlyUsedToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.recentlyUsedToolStripMenuItem.Text = "Recently used";
             // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator21.Size = new System.Drawing.Size(243, 6);
             // 
             // openFolderOfCurrentFileToolStripMenuItem
             // 
             this.openFolderOfCurrentFileToolStripMenuItem.Enabled = false;
             this.openFolderOfCurrentFileToolStripMenuItem.Name = "openFolderOfCurrentFileToolStripMenuItem";
-            this.openFolderOfCurrentFileToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.openFolderOfCurrentFileToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.openFolderOfCurrentFileToolStripMenuItem.Text = "Open folder of current file…";
             this.openFolderOfCurrentFileToolStripMenuItem.Click += new System.EventHandler(this.openFolderOfCurrentFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(243, 6);
             // 
             // importingFromSavegameToolStripMenuItem
             // 
             this.importingFromSavegameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.importingFromSavegameEmptyToolStripMenuItem});
             this.importingFromSavegameToolStripMenuItem.Name = "importingFromSavegameToolStripMenuItem";
-            this.importingFromSavegameToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.importingFromSavegameToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.importingFromSavegameToolStripMenuItem.Text = "Importing from savegame";
             // 
             // importingFromSavegameEmptyToolStripMenuItem
@@ -500,30 +503,30 @@ namespace ARKBreedingStats
             // importExportedCreaturesToolStripMenuItem
             // 
             this.importExportedCreaturesToolStripMenuItem.Name = "importExportedCreaturesToolStripMenuItem";
-            this.importExportedCreaturesToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.importExportedCreaturesToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.importExportedCreaturesToolStripMenuItem.Text = "Import exported Creatures";
             // 
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(243, 6);
             // 
             // copyLibrarydumpToClipboardToolStripMenuItem
             // 
             this.copyLibrarydumpToClipboardToolStripMenuItem.Name = "copyLibrarydumpToClipboardToolStripMenuItem";
-            this.copyLibrarydumpToClipboardToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.copyLibrarydumpToClipboardToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.copyLibrarydumpToClipboardToolStripMenuItem.Text = "Copy library-dump to clipboard";
             this.copyLibrarydumpToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyLibrarydumpToClipboardToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(239, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(243, 6);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
             this.quitToolStripMenuItem.Text = "&Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -1112,33 +1115,33 @@ namespace ARKBreedingStats
             // 
             this.openSettingsToolStripMenuItem.Name = "openSettingsToolStripMenuItem";
             this.openSettingsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemcomma)));
-            this.openSettingsToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.openSettingsToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.openSettingsToolStripMenuItem.Text = "Settings…";
             this.openSettingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // toolStripSeparator18
             // 
             this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new System.Drawing.Size(223, 6);
+            this.toolStripSeparator18.Size = new System.Drawing.Size(225, 6);
             // 
             // modValueManagerToolStripMenuItem
             // 
             this.modValueManagerToolStripMenuItem.Name = "modValueManagerToolStripMenuItem";
-            this.modValueManagerToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.modValueManagerToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.modValueManagerToolStripMenuItem.Text = "Mod value manager…";
             this.modValueManagerToolStripMenuItem.Click += new System.EventHandler(this.loadAdditionalValuesToolStripMenuItem_Click);
             // 
             // customStatOverridesToolStripMenuItem
             // 
             this.customStatOverridesToolStripMenuItem.Name = "customStatOverridesToolStripMenuItem";
-            this.customStatOverridesToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.customStatOverridesToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.customStatOverridesToolStripMenuItem.Text = "Custom stat overrides…";
             this.customStatOverridesToolStripMenuItem.Click += new System.EventHandler(this.customStatOverridesToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(223, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(225, 6);
             // 
             // extraDataToolStripMenuItem
             // 
@@ -1155,7 +1158,7 @@ namespace ARKBreedingStats
             // openJsonDataFolderToolStripMenuItem
             // 
             this.openJsonDataFolderToolStripMenuItem.Name = "openJsonDataFolderToolStripMenuItem";
-            this.openJsonDataFolderToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.openJsonDataFolderToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
             this.openJsonDataFolderToolStripMenuItem.Text = "Open json data folder…";
             this.openJsonDataFolderToolStripMenuItem.Click += new System.EventHandler(this.openJsonDataFolderToolStripMenuItem_Click);
             // 
@@ -2025,7 +2028,8 @@ namespace ARKBreedingStats
             this.columnHeaderSpecies,
             this.columnHeaderStatus,
             this.columnHeaderTribe,
-            this.columnHeaderStatusIcon});
+            this.columnHeaderStatusIcon,
+            this.columnHeaderScore});
             this.listViewLibrary.ContextMenuStrip = this.contextMenuStripLibrary;
             this.listViewLibrary.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewLibrary.FullRowSelect = true;
@@ -2044,217 +2048,188 @@ namespace ARKBreedingStats
             // 
             // columnHeaderName
             // 
-            this.columnHeaderName.DisplayIndex = 1;
             this.columnHeaderName.Text = "Name";
             this.columnHeaderName.Width = 97;
             // 
             // columnHeaderOwner
             // 
-            this.columnHeaderOwner.DisplayIndex = 2;
             this.columnHeaderOwner.Text = "Owner";
             this.columnHeaderOwner.Width = 48;
             // 
             // columnHeaderNote
             // 
-            this.columnHeaderNote.DisplayIndex = 3;
             this.columnHeaderNote.Text = "Notes";
             this.columnHeaderNote.Width = 48;
             // 
             // columnHeaderServer
             // 
-            this.columnHeaderServer.DisplayIndex = 4;
             this.columnHeaderServer.Text = "Server";
             // 
             // columnHeaderSex
             // 
-            this.columnHeaderSex.DisplayIndex = 5;
             this.columnHeaderSex.Text = "S";
             this.columnHeaderSex.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeaderSex.Width = 22;
             // 
             // columnHeaderDomesticated
             // 
-            this.columnHeaderDomesticated.DisplayIndex = 23;
             this.columnHeaderDomesticated.Text = "Domesticated";
             // 
             // columnHeaderTopness
             // 
-            this.columnHeaderTopness.DisplayIndex = 19;
             this.columnHeaderTopness.Text = "Tp%";
             this.columnHeaderTopness.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderTopness.Width = 33;
             // 
             // columnHeaderTopStatsNr
             // 
-            this.columnHeaderTopStatsNr.DisplayIndex = 18;
             this.columnHeaderTopStatsNr.Text = "Top";
             this.columnHeaderTopStatsNr.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderTopStatsNr.Width = 31;
             // 
             // columnHeaderGen
             // 
-            this.columnHeaderGen.DisplayIndex = 20;
             this.columnHeaderGen.Text = "Gen";
             this.columnHeaderGen.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.columnHeaderGen.Width = 34;
             // 
             // columnHeaderFound
             // 
-            this.columnHeaderFound.DisplayIndex = 21;
             this.columnHeaderFound.Text = "LW";
             this.columnHeaderFound.Width = 30;
             // 
             // columnHeaderMutations
             // 
-            this.columnHeaderMutations.DisplayIndex = 22;
             this.columnHeaderMutations.Text = "Mu";
+            this.columnHeaderMutations.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderMutations.Width = 30;
             // 
             // columnHeaderCooldown
             // 
-            this.columnHeaderCooldown.DisplayIndex = 24;
             this.columnHeaderCooldown.Text = "Cooldown/Growing";
             // 
             // columnHeaderHP
             // 
-            this.columnHeaderHP.DisplayIndex = 6;
             this.columnHeaderHP.Text = "HP";
             this.columnHeaderHP.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderHP.Width = 30;
             // 
             // columnHeaderSt
             // 
-            this.columnHeaderSt.DisplayIndex = 7;
             this.columnHeaderSt.Text = "St";
             this.columnHeaderSt.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderSt.Width = 30;
             // 
             // columnHeaderTo
             // 
-            this.columnHeaderTo.DisplayIndex = 17;
             this.columnHeaderTo.Text = "To";
             this.columnHeaderTo.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderTo.Width = 30;
             // 
             // columnHeaderOx
             // 
-            this.columnHeaderOx.DisplayIndex = 8;
             this.columnHeaderOx.Text = "Ox";
             this.columnHeaderOx.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderOx.Width = 30;
             // 
             // columnHeaderFo
             // 
-            this.columnHeaderFo.DisplayIndex = 9;
             this.columnHeaderFo.Text = "Fo";
             this.columnHeaderFo.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderFo.Width = 30;
             // 
             // columnHeaderWa
             // 
-            this.columnHeaderWa.DisplayIndex = 10;
             this.columnHeaderWa.Text = "Wa";
             this.columnHeaderWa.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderWa.Width = 30;
             // 
             // columnHeaderTemp
             // 
-            this.columnHeaderTemp.DisplayIndex = 11;
             this.columnHeaderTemp.Text = "Te";
             this.columnHeaderTemp.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderTemp.Width = 30;
             // 
             // columnHeaderWe
             // 
-            this.columnHeaderWe.DisplayIndex = 12;
             this.columnHeaderWe.Text = "We";
             this.columnHeaderWe.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderWe.Width = 30;
             // 
             // columnHeaderDm
             // 
-            this.columnHeaderDm.DisplayIndex = 13;
             this.columnHeaderDm.Text = "Dm";
             this.columnHeaderDm.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderDm.Width = 30;
             // 
             // columnHeaderSp
             // 
-            this.columnHeaderSp.DisplayIndex = 14;
             this.columnHeaderSp.Text = "Sp";
             this.columnHeaderSp.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderSp.Width = 30;
             // 
             // columnHeaderFr
             // 
-            this.columnHeaderFr.DisplayIndex = 15;
             this.columnHeaderFr.Text = "Fr";
             this.columnHeaderFr.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderFr.Width = 30;
             // 
             // columnHeaderCr
             // 
-            this.columnHeaderCr.DisplayIndex = 16;
             this.columnHeaderCr.Text = "Cr";
             this.columnHeaderCr.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeaderCr.Width = 30;
             // 
             // columnHeaderColor0
             // 
-            this.columnHeaderColor0.DisplayIndex = 25;
             this.columnHeaderColor0.Text = "C0";
             this.columnHeaderColor0.Width = 25;
             // 
             // columnHeaderColor1
             // 
-            this.columnHeaderColor1.DisplayIndex = 26;
             this.columnHeaderColor1.Text = "C1";
             this.columnHeaderColor1.Width = 25;
             // 
             // columnHeaderColor2
             // 
-            this.columnHeaderColor2.DisplayIndex = 27;
             this.columnHeaderColor2.Text = "C2";
             this.columnHeaderColor2.Width = 25;
             // 
             // columnHeaderColor3
             // 
-            this.columnHeaderColor3.DisplayIndex = 28;
             this.columnHeaderColor3.Text = "C3";
             this.columnHeaderColor3.Width = 25;
             // 
             // columnHeaderColor4
             // 
-            this.columnHeaderColor4.DisplayIndex = 29;
             this.columnHeaderColor4.Text = "C4";
             this.columnHeaderColor4.Width = 25;
             // 
             // columnHeaderColor5
             // 
-            this.columnHeaderColor5.DisplayIndex = 30;
             this.columnHeaderColor5.Text = "C5";
             this.columnHeaderColor5.Width = 25;
             // 
             // columnHeaderSpecies
             // 
-            this.columnHeaderSpecies.DisplayIndex = 31;
             this.columnHeaderSpecies.Text = "Species";
             // 
             // columnHeaderStatus
             // 
-            this.columnHeaderStatus.DisplayIndex = 32;
             this.columnHeaderStatus.Text = "Status";
             // 
             // columnHeaderTribe
             // 
-            this.columnHeaderTribe.DisplayIndex = 33;
             this.columnHeaderTribe.Text = "Tribe";
             // 
             // columnHeaderStatusIcon
             // 
-            this.columnHeaderStatusIcon.DisplayIndex = 0;
             this.columnHeaderStatusIcon.Text = "Status";
             this.columnHeaderStatusIcon.Width = 35;
+            // 
+            // columnHeaderScore
+            // 
+            this.columnHeaderScore.Text = "Score";
             // 
             // contextMenuStripLibrary
             // 
@@ -2268,6 +2243,7 @@ namespace ARKBreedingStats
             this.copyValuesToExtractorToolStripMenuItem,
             this.exportToClipboardToolStripMenuItem1,
             this.copyInfographicToClipboardToolStripMenuItem,
+            this.copyColorCodesToClipboardToolStripMenuItem,
             this.saveInfographicsToFolderToolStripMenuItem,
             this.toolStripSeparator22,
             this.removeCooldownGrowingToolStripMenuItem,
@@ -2281,7 +2257,7 @@ namespace ARKBreedingStats
             this.toolStripSeparator14,
             this.toolStripMenuItemRemove});
             this.contextMenuStripLibrary.Name = "contextMenuStripLibrary";
-            this.contextMenuStripLibrary.Size = new System.Drawing.Size(259, 370);
+            this.contextMenuStripLibrary.Size = new System.Drawing.Size(259, 392);
             this.contextMenuStripLibrary.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripLibrary_Opening);
             // 
             // toolStripMenuItemEdit
@@ -2387,6 +2363,13 @@ namespace ARKBreedingStats
             this.copyInfographicToClipboardToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.copyInfographicToClipboardToolStripMenuItem.Text = "Copy Infographic to Clipboard";
             this.copyInfographicToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyInfographicToClipboardToolStripMenuItem_Click);
+            // 
+            // copyColorCodesToClipboardToolStripMenuItem
+            // 
+            this.copyColorCodesToClipboardToolStripMenuItem.Name = "copyColorCodesToClipboardToolStripMenuItem";
+            this.copyColorCodesToClipboardToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
+            this.copyColorCodesToClipboardToolStripMenuItem.Text = "Copy Color-Code to Clipboard";
+            this.copyColorCodesToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyColorCodesToClipboardToolStripMenuItem_Click);
             // 
             // saveInfographicsToFolderToolStripMenuItem
             // 
@@ -3027,6 +3010,7 @@ namespace ARKBreedingStats
             // 
             // ToolStripTextBoxLibraryFilter
             // 
+            this.ToolStripTextBoxLibraryFilter.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ToolStripTextBoxLibraryFilter.Name = "ToolStripTextBoxLibraryFilter";
             this.ToolStripTextBoxLibraryFilter.Size = new System.Drawing.Size(200, 25);
             this.ToolStripTextBoxLibraryFilter.TextChanged += new System.EventHandler(this.ToolStripTextBoxLibraryFilter_TextChanged);
@@ -3042,6 +3026,7 @@ namespace ARKBreedingStats
             // 
             // panelToolBar
             // 
+            this.panelToolBar.Controls.Add(this.calcBreedingScoreButton);
             this.panelToolBar.Controls.Add(this.btReadValuesFromArk);
             this.panelToolBar.Controls.Add(this.btImportLastExported);
             this.panelToolBar.Controls.Add(this.pbSpecies);
@@ -3057,6 +3042,16 @@ namespace ARKBreedingStats
             this.panelToolBar.Name = "panelToolBar";
             this.panelToolBar.Size = new System.Drawing.Size(1134, 54);
             this.panelToolBar.TabIndex = 2;
+            // 
+            // calcBreedingScoreButton
+            // 
+            this.calcBreedingScoreButton.Location = new System.Drawing.Point(470, 3);
+            this.calcBreedingScoreButton.Name = "calcBreedingScoreButton";
+            this.calcBreedingScoreButton.Size = new System.Drawing.Size(92, 44);
+            this.calcBreedingScoreButton.TabIndex = 14;
+            this.calcBreedingScoreButton.Text = "Calculate\r\nBreeding Score";
+            this.calcBreedingScoreButton.UseVisualStyleBackColor = true;
+            this.calcBreedingScoreButton.Click += new System.EventHandler(this.calcBreedingScoreButton_Click);
             // 
             // btImportLastExported
             // 
@@ -3138,9 +3133,9 @@ namespace ARKBreedingStats
             // 
             // lbLibrarySelectionInfo
             // 
-            this.lbLibrarySelectionInfo.Location = new System.Drawing.Point(470, 3);
+            this.lbLibrarySelectionInfo.Location = new System.Drawing.Point(637, 3);
             this.lbLibrarySelectionInfo.Name = "lbLibrarySelectionInfo";
-            this.lbLibrarySelectionInfo.Size = new System.Drawing.Size(691, 45);
+            this.lbLibrarySelectionInfo.Size = new System.Drawing.Size(426, 45);
             this.lbLibrarySelectionInfo.TabIndex = 5;
             this.lbLibrarySelectionInfo.Click += new System.EventHandler(this.lbLibrarySelectionInfo_Click);
             // 
@@ -3533,6 +3528,7 @@ namespace ARKBreedingStats
         private System.Windows.Forms.ColumnHeader columnHeaderStatus;
         private System.Windows.Forms.ColumnHeader columnHeaderTribe;
         private System.Windows.Forms.ToolStripMenuItem copyInfographicToClipboardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyColorCodesToClipboardToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader columnHeaderStatusIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripLibraryHeader;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemResetLibraryColumnWidths;
@@ -3559,5 +3555,7 @@ namespace ARKBreedingStats
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator22;
         private System.Windows.Forms.ToolStripMenuItem extraDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
+        private System.Windows.Forms.Button calcBreedingScoreButton;
+        private System.Windows.Forms.ColumnHeader columnHeaderScore;
     }
 }

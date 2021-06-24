@@ -76,6 +76,8 @@ namespace ARKBreedingStats
             this.lbBreedingPlanInfo = new System.Windows.Forms.Label();
             this.flowLayoutPanelPairs = new System.Windows.Forms.FlowLayoutPanel();
             this.gbBPBreedingMode = new System.Windows.Forms.GroupBox();
+            this.rbBPTopStatsCn2 = new System.Windows.Forms.RadioButton();
+            this.CbConsiderOnlyEvenForHighStats = new System.Windows.Forms.CheckBox();
             this.cbBPMutationLimitOnlyOnePartner = new System.Windows.Forms.CheckBox();
             this.cbBPOnlyOneSuggestionForFemales = new System.Windows.Forms.CheckBox();
             this.cbBPIncludeCryoCreatures = new System.Windows.Forms.CheckBox();
@@ -86,7 +88,7 @@ namespace ARKBreedingStats
             this.rbBPHighStats = new System.Windows.Forms.RadioButton();
             this.rbBPTopStats = new System.Windows.Forms.RadioButton();
             this.statWeighting1 = new ARKBreedingStats.uiControls.StatWeighting();
-            this.CbConsiderOnlyEvenForHighStats = new System.Windows.Forms.CheckBox();
+            this.radioButtonFC = new System.Windows.Forms.RadioButton();
             this.tableLayoutMain.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageBreedableSpecies.SuspendLayout();
@@ -172,7 +174,7 @@ namespace ARKBreedingStats
             this.tabPageTags.Location = new System.Drawing.Point(4, 22);
             this.tabPageTags.Name = "tabPageTags";
             this.tabPageTags.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageTags.Size = new System.Drawing.Size(236, 521);
+            this.tabPageTags.Size = new System.Drawing.Size(236, 494);
             this.tabPageTags.TabIndex = 1;
             this.tabPageTags.Text = "Filters / Tags";
             this.tabPageTags.UseVisualStyleBackColor = true;
@@ -197,7 +199,7 @@ namespace ARKBreedingStats
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(230, 515);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(230, 488);
             this.tableLayoutPanel3.TabIndex = 7;
             // 
             // cbTribeFilterLibrary
@@ -227,7 +229,7 @@ namespace ARKBreedingStats
             this.tagSelectorList1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tagSelectorList1.Location = new System.Drawing.Point(3, 164);
             this.tagSelectorList1.Name = "tagSelectorList1";
-            this.tagSelectorList1.Size = new System.Drawing.Size(224, 348);
+            this.tagSelectorList1.Size = new System.Drawing.Size(224, 321);
             this.tagSelectorList1.TabIndex = 3;
             // 
             // cbBPTagExcludeDefault
@@ -584,6 +586,8 @@ namespace ARKBreedingStats
             // 
             // gbBPBreedingMode
             // 
+            this.gbBPBreedingMode.Controls.Add(this.radioButtonFC);
+            this.gbBPBreedingMode.Controls.Add(this.rbBPTopStatsCn2);
             this.gbBPBreedingMode.Controls.Add(this.CbConsiderOnlyEvenForHighStats);
             this.gbBPBreedingMode.Controls.Add(this.cbBPMutationLimitOnlyOnePartner);
             this.gbBPBreedingMode.Controls.Add(this.cbBPOnlyOneSuggestionForFemales);
@@ -600,6 +604,29 @@ namespace ARKBreedingStats
             this.gbBPBreedingMode.TabIndex = 6;
             this.gbBPBreedingMode.TabStop = false;
             this.gbBPBreedingMode.Text = "Breeding-Mode";
+            // 
+            // rbBPTopStatsCn2
+            // 
+            this.rbBPTopStatsCn2.AutoSize = true;
+            this.rbBPTopStatsCn2.Checked = true;
+            this.rbBPTopStatsCn2.Location = new System.Drawing.Point(122, 19);
+            this.rbBPTopStatsCn2.Name = "rbBPTopStatsCn2";
+            this.rbBPTopStatsCn2.Size = new System.Drawing.Size(124, 17);
+            this.rbBPTopStatsCn2.TabIndex = 3;
+            this.rbBPTopStatsCn2.Text = "Combine Top Stats II";
+            this.rbBPTopStatsCn2.UseVisualStyleBackColor = true;
+            this.rbBPTopStatsCn2.CheckedChanged += new System.EventHandler(this.radioButtonBPTopStatsCn2__CheckedChanged);
+            // 
+            // CbConsiderOnlyEvenForHighStats
+            // 
+            this.CbConsiderOnlyEvenForHighStats.AutoSize = true;
+            this.CbConsiderOnlyEvenForHighStats.Location = new System.Drawing.Point(6, 206);
+            this.CbConsiderOnlyEvenForHighStats.Name = "CbConsiderOnlyEvenForHighStats";
+            this.CbConsiderOnlyEvenForHighStats.Size = new System.Drawing.Size(164, 17);
+            this.CbConsiderOnlyEvenForHighStats.TabIndex = 9;
+            this.CbConsiderOnlyEvenForHighStats.Text = "Consider only even high stats";
+            this.CbConsiderOnlyEvenForHighStats.UseVisualStyleBackColor = true;
+            this.CbConsiderOnlyEvenForHighStats.CheckedChanged += new System.EventHandler(this.CbConsiderOnlyEvenForHighStats_CheckedChanged);
             // 
             // cbBPMutationLimitOnlyOnePartner
             // 
@@ -681,12 +708,10 @@ namespace ARKBreedingStats
             // rbBPTopStatsCn
             // 
             this.rbBPTopStatsCn.AutoSize = true;
-            this.rbBPTopStatsCn.Checked = true;
             this.rbBPTopStatsCn.Location = new System.Drawing.Point(6, 19);
             this.rbBPTopStatsCn.Name = "rbBPTopStatsCn";
             this.rbBPTopStatsCn.Size = new System.Drawing.Size(115, 17);
             this.rbBPTopStatsCn.TabIndex = 2;
-            this.rbBPTopStatsCn.TabStop = true;
             this.rbBPTopStatsCn.Text = "Combine Top Stats";
             this.rbBPTopStatsCn.UseVisualStyleBackColor = true;
             this.rbBPTopStatsCn.CheckedChanged += new System.EventHandler(this.radioButtonBPTopStatsCn_CheckedChanged);
@@ -708,7 +733,7 @@ namespace ARKBreedingStats
             this.rbBPTopStats.Location = new System.Drawing.Point(6, 42);
             this.rbBPTopStats.Name = "rbBPTopStats";
             this.rbBPTopStats.Size = new System.Drawing.Size(86, 17);
-            this.rbBPTopStats.TabIndex = 0;
+            this.rbBPTopStats.TabIndex = 3;
             this.rbBPTopStats.Text = "Top Stats Lc";
             this.rbBPTopStats.UseVisualStyleBackColor = true;
             this.rbBPTopStats.CheckedChanged += new System.EventHandler(this.radioButtonBPTopStats_CheckedChanged);
@@ -735,16 +760,16 @@ namespace ARKBreedingStats
         1D,
         1D};
             // 
-            // CbConsiderOnlyEvenForHighStats
+            // radioButtonFC
             // 
-            this.CbConsiderOnlyEvenForHighStats.AutoSize = true;
-            this.CbConsiderOnlyEvenForHighStats.Location = new System.Drawing.Point(6, 206);
-            this.CbConsiderOnlyEvenForHighStats.Name = "CbConsiderOnlyEvenForHighStats";
-            this.CbConsiderOnlyEvenForHighStats.Size = new System.Drawing.Size(164, 17);
-            this.CbConsiderOnlyEvenForHighStats.TabIndex = 9;
-            this.CbConsiderOnlyEvenForHighStats.Text = "Consider only even high stats";
-            this.CbConsiderOnlyEvenForHighStats.UseVisualStyleBackColor = true;
-            this.CbConsiderOnlyEvenForHighStats.CheckedChanged += new System.EventHandler(this.CbConsiderOnlyEvenForHighStats_CheckedChanged);
+            this.radioButtonFC.AutoSize = true;
+            this.radioButtonFC.Location = new System.Drawing.Point(122, 42);
+            this.radioButtonFC.Name = "radioButtonFC";
+            this.radioButtonFC.Size = new System.Drawing.Size(68, 17);
+            this.radioButtonFC.TabIndex = 10;
+            this.radioButtonFC.Text = "Full Color";
+            this.radioButtonFC.UseVisualStyleBackColor = true;
+            this.radioButtonFC.CheckedChanged += new System.EventHandler(this.radioButtonFC_CheckedChanged);
             // 
             // BreedingPlan
             // 
@@ -832,5 +857,7 @@ namespace ARKBreedingStats
         private System.Windows.Forms.CheckBox cbTribeFilterLibrary;
         private PedigreeCreature pedigreeCreatureBestPossibleInSpeciesFiltered;
         private System.Windows.Forms.CheckBox CbConsiderOnlyEvenForHighStats;
+        private System.Windows.Forms.RadioButton rbBPTopStatsCn2;
+        private System.Windows.Forms.RadioButton radioButtonFC;
     }
 }

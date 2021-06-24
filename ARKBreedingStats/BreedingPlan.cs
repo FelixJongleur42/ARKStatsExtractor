@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Linq;
@@ -87,7 +88,7 @@ namespace ARKBreedingStats
             for (int i = 0; i < Values.STATS_COUNT; i++)
                 _statWeights[i] = 1;
 
-            _breedingMode = BreedingMode.TopStatsConservative;
+            _breedingMode = BreedingMode.TopStatsConservative2;
 
             _breedingPairs = new List<BreedingPair>();
             pedigreeCreatureBest.SetIsVirtual(true);
@@ -365,151 +366,7 @@ namespace ARKBreedingStats
                 pedigreeCreature2.Show();
                 lbBPBreedingScore.Show();
 
-                _breedingPairs.Clear();
-                short[] bestPossLevels = new short[Values.STATS_COUNT]; // best possible levels
-
-                for (int fi = 0; fi < selectedFemales.Length; fi++)
-                {
-                    var female = selectedFemales[fi];
-                    for (int mi = 0; mi < selectedMales.Length; mi++)
-                    {
-                        var male = selectedMales[mi];
-                        // if Properties.Settings.Default.IgnoreSexInBreedingPlan (useful when using S+ mutator), skip pair if
-                        // creatures are the same, or pair has already been added
-                        if (Settings.Default.IgnoreSexInBreedingPlan)
-                        {
-                            if (considerChosenCreature)
-                            {
-                                if (male == female)
-                                    continue;
-                            }
-                            else if (fi == mi)
-                                break;
-                        }
-                        // if mutation limit is set, only skip pairs where both parents exceed that limit. One parent is enough to trigger a mutation.
-                        if (considerMutationLimit && female.Mutations > nudBPMutationLimit.Value && male.Mutations > nudBPMutationLimit.Value)
-                        {
-                            creaturesMutationsFilteredOut = true;
-                            continue;
-                        }
-
-                        double t = 0;
-                        int nrTS = 0;
-                        double eTS = 0;
-
-                        int topFemale = 0;
-                        int topMale = 0;
-
-                        for (int s = 0; s < Values.STATS_COUNT; s++)
-                        {
-                            if (s == (int)StatNames.Torpidity || !_currentSpecies.UsesStat(s)) continue;
-                            bestPossLevels[s] = 0;
-                            int higherLevel = Math.Max(female.levelsWild[s], male.levelsWild[s]);
-                            int lowerLevel = Math.Min(female.levelsWild[s], male.levelsWild[s]);
-                            if (higherLevel < 0) higherLevel = 0;
-                            if (lowerLevel < 0) lowerLevel = 0;
-
-                            bool ignoreTopStats = Settings.Default.BreedingPlannerConsiderOnlyEvenForHighStats
-                                                  && higherLevel % 2 != 0
-                                                  && _statWeights[s] > 0;
-
-                            bool higherIsBetter = _statWeights[s] >= 0;
-
-                            double tt = _statWeights[s] * (ProbabilityHigherLevel * higherLevel + ProbabilityLowerLevel * lowerLevel) / 40;
-                            if (tt != 0)
-                            {
-                                if (_breedingMode == BreedingMode.TopStatsLucky)
-                                {
-                                    if (!ignoreTopStats && (female.levelsWild[s] == _bestLevels[s] || male.levelsWild[s] == _bestLevels[s]))
-                                    {
-                                        if (female.levelsWild[s] == _bestLevels[s] && male.levelsWild[s] == _bestLevels[s])
-                                            tt *= 1.142;
-                                    }
-                                    else if (_bestLevels[s] > 0)
-                                        tt *= .01;
-                                }
-                                else if (_breedingMode == BreedingMode.TopStatsConservative && _bestLevels[s] > 0)
-                                {
-                                    bestPossLevels[s] = (short)(higherIsBetter ? Math.Max(female.levelsWild[s], male.levelsWild[s]) : Math.Min(female.levelsWild[s], male.levelsWild[s]));
-                                    tt *= .01;
-                                    if (!ignoreTopStats && (female.levelsWild[s] == _bestLevels[s] || male.levelsWild[s] == _bestLevels[s]))
-                                    {
-                                        nrTS++;
-                                        eTS += female.levelsWild[s] == _bestLevels[s] && male.levelsWild[s] == _bestLevels[s] ? 1 : ProbabilityHigherLevel;
-                                        if (female.levelsWild[s] == _bestLevels[s])
-                                            topFemale++;
-                                        if (male.levelsWild[s] == _bestLevels[s])
-                                            topMale++;
-                                    }
-                                }
-                            }
-                            t += tt;
-                        }
-
-                        if (_breedingMode == BreedingMode.TopStatsConservative)
-                        {
-                            if (topFemale < nrTS && topMale < nrTS)
-                                t += eTS;
-                            else
-                                t += .1 * eTS;
-                            // check if the best possible stat outcome regarding topLevels already exists in a male
-                            bool maleExists = false;
-
-                            foreach (Creature cr in selectedMales)
-                            {
-                                maleExists = true;
-                                for (int s = 0; s < Values.STATS_COUNT; s++)
-                                {
-                                    if (s == (int)StatNames.Torpidity
-                                        || !cr.Species.UsesStat(s)
-                                        || cr.levelsWild[s] == bestPossLevels[s]
-                                        || bestPossLevels[s] != _bestLevels[s])
-                                        continue;
-
-                                    maleExists = false;
-                                    break;
-                                }
-                                if (maleExists)
-                                    break;
-                            }
-                            if (maleExists)
-                                t *= .4; // another male with the same stats is not worth much, the mating-cooldown of males is short.
-                            else
-                            {
-                                // check if the best possible stat outcome already exists in a female
-                                bool femaleExists = false;
-                                foreach (Creature cr in selectedFemales)
-                                {
-                                    femaleExists = true;
-                                    for (int s = 0; s < Values.STATS_COUNT; s++)
-                                    {
-                                        if (s == (int)StatNames.Torpidity
-                                            || !cr.Species.UsesStat(s)
-                                            || cr.levelsWild[s] == bestPossLevels[s]
-                                            || bestPossLevels[s] != _bestLevels[s])
-                                            continue;
-
-                                        femaleExists = false;
-                                        break;
-                                    }
-                                    if (femaleExists)
-                                        break;
-                                }
-                                if (femaleExists)
-                                    t *= .8; // another female with the same stats may be useful, but not so much in conservative breeding
-                            }
-                            //t *= 2; // scale conservative mode as it rather displays improvement, but only scarcely
-                        }
-
-
-                        int mutationPossibleFrom = female.Mutations < MutationPossibleWithLessThan && male.Mutations < MutationPossibleWithLessThan ? 2
-                            : female.Mutations < MutationPossibleWithLessThan || male.Mutations < MutationPossibleWithLessThan ? 1 : 0;
-
-                        _breedingPairs.Add(new BreedingPair(female, male, t * 1.25, (mutationPossibleFrom == 2 ? ProbabilityOfOneMutation : mutationPossibleFrom == 1 ? ProbabilityOfOneMutationFromOneParent : 0)));
-                    }
-                }
-
-                _breedingPairs = _breedingPairs.OrderByDescending(p => p.BreedingScore).ToList();
+                _breedingPairs = CalculateBreedingPairs(considerChosenCreature, selectedFemales, selectedMales, out creaturesMutationsFilteredOut);
 
                 if (cbBPOnlyOneSuggestionForFemales.Checked)
                 {
@@ -692,6 +549,311 @@ namespace ARKBreedingStats
             if (considerChosenCreature) btShowAllCreatures.Text = string.Format(Loc.S("BPCancelRestrictionOn"), _chosenCreature.name);
             btShowAllCreatures.Visible = considerChosenCreature;
             ResumeLayout();
+        }
+
+        private void updateTargetLevels(Creature c, int[] targetLevels)
+        {
+            for (int s = 0; s < Values.STATS_COUNT; s++)
+            {
+                if (s == (int)StatNames.Torpidity || !_currentSpecies.UsesStat(s)) continue;
+                if (_statWeights[s] < 0)
+                {
+                    if (c != null)
+                    {
+                        targetLevels[s] = Math.Min(targetLevels[s], c.levelsWild[s]);
+                    } else
+                    {
+                        targetLevels[s] = 254;
+                    }
+                } else {
+                    if (c != null)
+                    {
+                        targetLevels[s] = Math.Max(targetLevels[s], c.levelsWild[s]);
+                    }
+                    else
+                    {
+                        targetLevels[s] = 0;
+                    }
+                }
+            }
+        }
+
+        private int[] createMatchLevels(Creature c, int[] targetLevels)
+        {
+            int[] matchLevels = new int[Values.STATS_COUNT];
+            for (int s = 0; s < Values.STATS_COUNT; s++)
+            {
+                if (s == (int)StatNames.Torpidity || !_currentSpecies.UsesStat(s)) continue;
+                if (c.levelsWild[s] == targetLevels[s])
+                {
+                    matchLevels[s] = 0;
+                }
+                else if (_statWeights[s] < 0)
+                {
+                    if (c.levelsWild[s] > targetLevels[s])
+                    {
+                        matchLevels[s] = -1;
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                }
+                else
+                {
+                    if (c.levelsWild[s] < targetLevels[s])
+                    {
+                        matchLevels[s] = +1;
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+            return matchLevels;
+        }
+
+        public List<BreedingPair> CalculateBreedingPairs(bool considerChosenCreature, Creature[] selectedFemales, Creature[] selectedMales, out bool creaturesMutationsFilteredOut)
+        {
+            // out
+            creaturesMutationsFilteredOut = false;
+            List<BreedingPair> breedingPairs = new List<BreedingPair>();
+            if (selectedFemales.Length == 0)
+            {
+                return breedingPairs;
+            }
+            bool considerMutationLimit = nudBPMutationLimit.Value >= 0;
+            
+            short[] bestPossLevels = new short[Values.STATS_COUNT]; // best possible levels
+            int[] targetLevels = new int[Values.STATS_COUNT];
+            updateTargetLevels(null, targetLevels);
+            for (int i = 0; i < selectedFemales.Length; i++)
+            {
+                updateTargetLevels(selectedFemales[i], targetLevels);
+            }
+            for (int i = 0; i < selectedMales.Length; i++)
+            {
+                updateTargetLevels(selectedMales[i], targetLevels);
+            }
+            Debug.WriteLine("targetLevels: " + string.Join(", ", targetLevels));
+            for (int fi = 0; fi < selectedFemales.Length; fi++)
+            {
+                var female = selectedFemales[fi];
+                int[] matchLevelsFemale = createMatchLevels(female, targetLevels);
+                for (int mi = 0; mi < selectedMales.Length; mi++)
+                {
+                    var male = selectedMales[mi];
+                    // if Properties.Settings.Default.IgnoreSexInBreedingPlan (useful when using S+ mutator), skip pair if
+                    // creatures are the same, or pair has already been added
+                    if (Settings.Default.IgnoreSexInBreedingPlan)
+                    {
+                        if (considerChosenCreature)
+                        {
+                            if (male == female)
+                                continue;
+                        }
+                        else if (fi == mi)
+                            break;
+                    }
+                    // if mutation limit is set, only skip pairs where both parents exceed that limit. One parent is enough to trigger a mutation.
+                    if (considerMutationLimit && female.Mutations > nudBPMutationLimit.Value && male.Mutations > nudBPMutationLimit.Value)
+                    {
+                        creaturesMutationsFilteredOut = true;
+                        continue;
+                    }
+
+                    int[] matchLevelsMale = createMatchLevels(male, targetLevels);
+
+                    int t0 = 0;
+                    double t = (_breedingMode == BreedingMode.TopStatsConservative2 ? 1.0 : 0.0);
+                    int nrTS = 0;
+                    double eTS = 0;
+
+                    int topFemale = 0;
+                    int topMale = 0;
+
+                    if (_breedingMode != BreedingMode.FullColor)
+                    {
+                        for (int s = 0; s < Values.STATS_COUNT; s++)
+                        {
+                            if (s == (int)StatNames.Torpidity || !_currentSpecies.UsesStat(s)) continue;
+                            bestPossLevels[s] = 0;
+                            int higherLevel = Math.Max(female.levelsWild[s], male.levelsWild[s]);
+                            int lowerLevel = Math.Min(female.levelsWild[s], male.levelsWild[s]);
+                            if (higherLevel < 0) higherLevel = 0;
+                            if (lowerLevel < 0) lowerLevel = 0;
+
+                            bool ignoreTopStats = Settings.Default.BreedingPlannerConsiderOnlyEvenForHighStats
+                                                  && higherLevel % 2 != 0
+                                                  && _statWeights[s] > 0;
+
+                            bool higherIsBetter = _statWeights[s] >= 0;
+
+                            if (_breedingMode != BreedingMode.TopStatsConservative2)
+                            {
+                                double tt = _statWeights[s] * (ProbabilityHigherLevel * higherLevel + ProbabilityLowerLevel * lowerLevel) / 40;
+                                if (tt != 0)
+                                {
+                                    if (_breedingMode == BreedingMode.TopStatsLucky)
+                                    {
+                                        if (!ignoreTopStats && (female.levelsWild[s] == _bestLevels[s] || male.levelsWild[s] == _bestLevels[s]))
+                                        {
+                                            if (female.levelsWild[s] == _bestLevels[s] && male.levelsWild[s] == _bestLevels[s])
+                                                tt *= 1.142;
+                                        }
+                                        else if (_bestLevels[s] > 0)
+                                            tt *= .01;
+                                    }
+                                    else if (_breedingMode == BreedingMode.TopStatsConservative && _bestLevels[s] > 0)
+                                    {
+                                        bestPossLevels[s] = (short)(higherIsBetter ? Math.Max(female.levelsWild[s], male.levelsWild[s]) : Math.Min(female.levelsWild[s], male.levelsWild[s]));
+                                        tt *= .01;
+                                        if (!ignoreTopStats && (female.levelsWild[s] == _bestLevels[s] || male.levelsWild[s] == _bestLevels[s]))
+                                        {
+                                            nrTS++;
+                                            eTS += female.levelsWild[s] == _bestLevels[s] && male.levelsWild[s] == _bestLevels[s] ? 1 : ProbabilityHigherLevel;
+                                            if (female.levelsWild[s] == _bestLevels[s])
+                                                topFemale++;
+                                            if (male.levelsWild[s] == _bestLevels[s])
+                                                topMale++;
+                                        }
+                                    }
+                                }
+                                t += tt;
+                            }
+                            else if (_breedingMode == BreedingMode.TopStatsConservative2)
+                            {
+                                if ((matchLevelsFemale[s] == 0) && (matchLevelsMale[s] == 0))
+                                {
+                                    // Beide Partner bereits auf target
+                                    t *= 1.0;
+                                    // Anzahl erreichbare Stats zählen
+                                    t0++;
+                                }
+                                else if (((matchLevelsFemale[s] == 1) && (matchLevelsMale[s] == 0)) || ((matchLevelsFemale[s] == 0) && (matchLevelsMale[s] == 1)))
+                                {
+                                    // ein Partner bereits auf target, der andere muss "hoch"
+                                    t *= ProbabilityHigherLevel;
+                                    // Anzahl erreichbare Stats zählen
+                                    t0++;
+                                }
+                                else if (((matchLevelsFemale[s] == -1) && (matchLevelsMale[s] == 0)) || ((matchLevelsFemale[s] == 0) && (matchLevelsMale[s] == -1)))
+                                {
+                                    // ein Partner bereits auf target, der andere muss "runter"
+                                    t *= ProbabilityLowerLevel;
+                                    // Anzahl erreichbare Stats zählen
+                                    t0++;
+                                }
+                            }
+                        }
+                    } else if (_breedingMode == BreedingMode.FullColor)
+                    {
+                        int[] scorePerColor = new int[256];
+                        int[] matchPerColor = new int[256];
+                        for (int regionId = 0; regionId <= 5; regionId++)
+                        {
+                            if (_currentSpecies.EnabledColorRegions[regionId] == false)
+                            {
+                                continue;
+                            }
+                            // add match if colors match
+                            if (male.colors[regionId] == female.colors[regionId])
+                            {
+                                matchPerColor[male.colors[regionId]]++;
+                            } else
+                            {
+                                // score that color itself
+                                scorePerColor[male.colors[regionId]]++;
+                                scorePerColor[female.colors[regionId]]++;
+                            }
+                        }
+                        // der score richtet sich nach dem höchsten score, der für eine Farbe erzielt wird
+                        t = 0;
+                        for (int color = 0; color < matchPerColor.Length; color++)
+                        {
+                            t = Math.Max(t, matchPerColor[color] + scorePerColor[color]);
+                        }
+                    }
+                    if (_breedingMode == BreedingMode.TopStatsConservative2)
+                    {
+                        // Score ist die Anzahl der erreichbaren Stats + die Wahrscheinlichkeit, diese zu erreichen (0-1)
+                        t += t0;
+                    } else if (_breedingMode == BreedingMode.TopStatsConservative)
+                    {
+                        if (topFemale < nrTS && topMale < nrTS)
+                            t += eTS;
+                        else
+                            t += .1 * eTS;
+                        // check if the best possible stat outcome regarding topLevels already exists in a male
+                        bool maleExists = false;
+
+                        foreach (Creature cr in selectedMales)
+                        {
+                            maleExists = true;
+                            for (int s = 0; s < Values.STATS_COUNT; s++)
+                            {
+                                if (s == (int)StatNames.Torpidity
+                                    || !cr.Species.UsesStat(s)
+                                    || cr.levelsWild[s] == bestPossLevels[s]
+                                    || bestPossLevels[s] != _bestLevels[s])
+                                    continue;
+
+                                maleExists = false;
+                                break;
+                            }
+                            if (maleExists)
+                                break;
+                        }
+                        if (maleExists)
+                            t *= .4; // another male with the same stats is not worth much, the mating-cooldown of males is short.
+                        else
+                        {
+                            // check if the best possible stat outcome already exists in a female
+                            bool femaleExists = false;
+                            foreach (Creature cr in selectedFemales)
+                            {
+                                femaleExists = true;
+                                for (int s = 0; s < Values.STATS_COUNT; s++)
+                                {
+                                    if (s == (int)StatNames.Torpidity
+                                        || !cr.Species.UsesStat(s)
+                                        || cr.levelsWild[s] == bestPossLevels[s]
+                                        || bestPossLevels[s] != _bestLevels[s])
+                                        continue;
+
+                                    femaleExists = false;
+                                    break;
+                                }
+                                if (femaleExists)
+                                    break;
+                            }
+                            if (femaleExists)
+                                t *= .8; // another female with the same stats may be useful, but not so much in conservative breeding
+                        }
+                        //t *= 2; // scale conservative mode as it rather displays improvement, but only scarcely
+                    }
+
+
+                    int mutationPossibleFrom = female.Mutations < MutationPossibleWithLessThan && male.Mutations < MutationPossibleWithLessThan ? 2
+                        : female.Mutations < MutationPossibleWithLessThan || male.Mutations < MutationPossibleWithLessThan ? 1 : 0;
+
+                    breedingPairs.Add(new BreedingPair(female, male, t, (mutationPossibleFrom == 2 ? ProbabilityOfOneMutation : mutationPossibleFrom == 1 ? ProbabilityOfOneMutationFromOneParent : 0)));
+                }
+            }
+            // FIXME ordering, hier gewinnt auch noch die höhere Mutation (Zweier-Logarithmus), darf nicht "überschlagen", also gewichten mit 0.5 "hoch" 6
+            breedingPairs = breedingPairs.OrderByDescending(p => p.BreedingScore + Math.Pow(0.5, 6) * Math.Log(Math.Max(1, p.Female.Mutations + p.Male.Mutations), 2)).ToList();
+            // breedingPairs = breedingPairs.OrderByDescending(p => p.BreedingScore).ToList();
+            Debug.WriteLine("Species: " + _currentSpecies.name + ", considerChosenCreature: " + considerChosenCreature +
+                //
+                ", considerMutationLimit: " + considerMutationLimit + ", # Females: " + selectedFemales.Length + ", # Males: " + selectedMales.Length +
+                //
+                ", _breedingMode: " + _breedingMode + ", # breedingPairs: " + breedingPairs.Count +
+                //
+                ", BreedingScore: " + (breedingPairs.Count > 0 ? breedingPairs.ElementAt(0).BreedingScore : 0.0)
+                //
+                );
+            return breedingPairs;
         }
 
         /// <summary>
@@ -1154,7 +1316,9 @@ namespace ARKBreedingStats
         {
             BestNextGen,
             TopStatsLucky,
-            TopStatsConservative
+            TopStatsConservative,
+            TopStatsConservative2,
+            FullColor
         }
 
         private void cbTagExcludeDefault_CheckedChanged(object sender, EventArgs e)
@@ -1225,6 +1389,24 @@ namespace ARKBreedingStats
         {
             Settings.Default.BreedingPlannerConsiderOnlyEvenForHighStats = CbConsiderOnlyEvenForHighStats.Checked;
             CalculateBreedingScoresAndDisplayPairs();
+        }
+
+        private void radioButtonBPTopStatsCn2__CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbBPTopStatsCn2.Checked)
+            {
+                _breedingMode = BreedingMode.TopStatsConservative2;
+                CalculateBreedingScoresAndDisplayPairs();
+            }
+        }
+
+        private void radioButtonFC_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonFC.Checked)
+            {
+                _breedingMode = BreedingMode.FullColor;
+                CalculateBreedingScoresAndDisplayPairs();
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ using ARKBreedingStats.utils;
 using System.IO;
 using System.Text.RegularExpressions;
 using ARKBreedingStats.library;
+using System.Globalization;
 
 namespace ARKBreedingStats
 {
@@ -617,7 +618,7 @@ namespace ARKBreedingStats
             }
         }
 
-        private void ShowCreaturesInListView(IEnumerable<Creature> creatures)
+        private void ShowCreaturesInListView(IEnumerable<Creature> creatures, IEnumerable<Creature> unfilteredCreatures)
         {
             listViewLibrary.BeginUpdate();
 
@@ -626,6 +627,46 @@ namespace ARKBreedingStats
             listViewLibrary.Groups.Clear();
 
             Dictionary<string, ListViewGroup> speciesGroups = new Dictionary<string, ListViewGroup>();
+            // add groups for each species (so they are sorted alphabetically)
+            foreach (Species s in Values.V.species)
+            {
+                listViewLibrary.Groups.Add(new ListViewGroup(s.name));
+            }
+
+            // BEGIN integrate Breeding Score
+            Dictionary<Species, List<Creature>> selectedFemalesBySpecies = new Dictionary<Species, List<Creature>>();
+            Dictionary<Species, List<Creature>> selectedMalesBySpecies = new Dictionary<Species, List<Creature>>();
+            foreach (Creature cr in unfilteredCreatures)
+            {
+                if (cr.sex == Sex.Female)
+                {
+                    AddBySpecies(selectedFemalesBySpecies, cr);
+                }
+                else
+                {
+                    AddBySpecies(selectedMalesBySpecies, cr);
+                }
+            }
+            Dictionary<Creature, double> scoreByCreature = new Dictionary<Creature, double>();
+            // for each species (by female)
+            foreach (Species species in selectedFemalesBySpecies.Keys)
+            {
+                List<Creature> selectedFemales = selectedFemalesBySpecies[species];
+                List<Creature> selectedMales;
+                if (selectedMalesBySpecies.TryGetValue(species, out selectedMales)) {
+                    bool creaturesMutationsFilteredOut;
+                    // IMPORTANT for Init!
+                    breedingPlan1.SetSpecies(species);
+                    List<BreedingPair> breedingPairs = breedingPlan1.CalculateBreedingPairs(false, selectedFemales.ToArray(), selectedMales.ToArray(), out creaturesMutationsFilteredOut);
+                    foreach (BreedingPair pair in breedingPairs)
+                    {
+                        UpdateScore(scoreByCreature, pair, pair.Male);
+                        UpdateScore(scoreByCreature, pair, pair.Female);
+                    }
+                }
+            }
+            // END integrate Breeding Score
+
             List<ListViewItem> items = new List<ListViewItem>();
 
             foreach (Creature cr in creatures)
@@ -641,8 +682,9 @@ namespace ARKBreedingStats
                     group = new ListViewGroup(spDesc);
                     speciesGroups.Add(spDesc, group);
                 }
-
-                items.Add(CreateCreatureLVItem(cr, group));
+                double score;
+                scoreByCreature.TryGetValue(cr, out score);
+                items.Add(CreateCreatureLVItem(cr, group, score));
             }
             // use species list as initial source to get the sorted order set by the user
             listViewLibrary.Groups.AddRange(Values.V.species.Select(sp => sp.DescriptiveNameAndMod).Where(sp => speciesGroups.ContainsKey(sp)).Select(sp => speciesGroups[sp]).ToArray());
@@ -660,6 +702,40 @@ namespace ARKBreedingStats
                 // if no items are shown, shade red, if something is shown and potentially some are sorted out, shade yellow
                 ToolStripTextBoxLibraryFilter.BackColor = items.Any() ? Color.LightGoldenrodYellow : Color.LightSalmon;
                 ToolStripButtonLibraryFilterClear.BackColor = Color.Orange;
+            }
+        }
+
+        private static void AddBySpecies(Dictionary<Species, List<Creature>> selectedCreaturesBySpecies, Creature cr)
+        {
+            // even calculate these!?(expensive)
+            if (cr.Status == CreatureStatus.Unavailable) return;
+            if (cr.Status == CreatureStatus.Dead) return;
+            List<Creature> selectedCreatures;
+            if (selectedCreaturesBySpecies.TryGetValue(cr.Species, out selectedCreatures))
+            {
+                selectedCreatures.Add(cr);
+            }
+            else
+            {
+                selectedCreatures = new List<Creature>();
+                selectedCreatures.Add(cr);
+                selectedCreaturesBySpecies[cr.Species] = selectedCreatures;
+            }
+        }
+
+        private static void UpdateScore(Dictionary<Creature, double> scoreByCreature, BreedingPair pair, Creature creature)
+        {
+            if (scoreByCreature.ContainsKey(creature) == false)
+            {
+                scoreByCreature[creature] = pair.BreedingScore;
+            }
+            else
+            {
+                double? score = scoreByCreature[creature];
+                if (pair.BreedingScore > score)
+                {
+                    scoreByCreature[creature] = pair.BreedingScore;
+                }
             }
         }
 
@@ -698,7 +774,7 @@ namespace ARKBreedingStats
                     }
                 }
                 if (ci >= 0)
-                    listViewLibrary.Items[ci] = CreateCreatureLVItem(cr, listViewLibrary.Items[ci].Group);
+                    listViewLibrary.Items[ci] = CreateCreatureLVItem(cr, listViewLibrary.Items[ci].Group, 0.0);
             }
 
             // recreate ownerList
@@ -727,7 +803,21 @@ namespace ARKBreedingStats
             _reactOnCreatureSelectionChange = true;
         }
 
-        private ListViewItem CreateCreatureLVItem(Creature cr, ListViewGroup g)
+        /// <summary>
+        /// Returns the dateTime when the countdown of a creature is ready. Either the maturingTime, the matingCooldownTime or null if no countdown is set.
+        /// </summary>
+        /// <returns></returns>
+        private DateTime? DisplayedCreatureCountdown(DateTime? matingCooldownUntil, DateTime? growingUntil)
+        {
+            var countdown = matingCooldownUntil.HasValue && growingUntil.HasValue
+                    ? (matingCooldownUntil.Value > growingUntil.Value ? matingCooldownUntil.Value : growingUntil.Value)
+                    : matingCooldownUntil ?? growingUntil;
+            if (countdown == null) return null;
+
+            return DateTime.Now.CompareTo(countdown) < 0 ? countdown : null;
+        }
+
+        private ListViewItem CreateCreatureLVItem(Creature cr, ListViewGroup g, double? breedingScore)
         {
             double colorFactor = 100d / _creatureCollection.maxChartLevel;
             DateTime? cldGr = cr.cooldownUntil.HasValue && cr.growingUntil.HasValue ?
@@ -746,7 +836,7 @@ namespace ARKBreedingStats
                             cr.topStatsCount.ToString(),
                             cr.generation.ToString(),
                             cr.levelFound.ToString(),
-                            cr.Mutations.ToString(),
+                            cr.Mutations.ToString("N0", CultureInfo.GetCultureInfo("de-DE")),
                             DisplayedCreatureCountdown(cr, out var cooldownForeColor, out var cooldownBackColor)
                     }
                     .Concat(cr.levelsWild.Select(x => x.ToString()).ToArray())
@@ -762,7 +852,8 @@ namespace ARKBreedingStats
                 cr.Species.DescriptiveNameAndMod,
                 cr.Status.ToString(),
                 cr.tribe,
-                Utils.StatusSymbol(cr.Status, string.Empty)
+                Utils.StatusSymbol(cr.Status, string.Empty),
+                breedingScore?.ToString("N4") ?? "-"
             }).ToArray();
 
             // check if we display group for species or not.
@@ -1034,14 +1125,13 @@ namespace ARKBreedingStats
             foreach (ListViewItem i in listViewLibrary.SelectedItems)
                 selectedCreatures.Add((Creature)i.Tag);
 
-            IEnumerable<Creature> filteredList;
-
+            // fke always unfilteredList
+            IEnumerable<Creature> unfilteredList = from creature in _creatureCollection.creatures
+                           where !creature.flags.HasFlag(CreatureFlags.Placeholder)
+                           select creature;
+            IEnumerable<Creature> filteredList = unfilteredList;
             if (_creaturesPreFiltered == null)
             {
-                filteredList = from creature in _creatureCollection.creatures
-                               where !creature.flags.HasFlag(CreatureFlags.Placeholder)
-                               select creature;
-
                 // if only one species should be shown adjust headers if the selected species has custom statNames
                 Dictionary<string, string> customStatNames = null;
                 if (listBoxSpeciesLib.SelectedItem is Species selectedSpecies)
@@ -1055,7 +1145,6 @@ namespace ARKBreedingStats
 
                 _creaturesPreFiltered = ApplyLibraryFilterSettings(filteredList).ToArray();
             }
-
             filteredList = _creaturesPreFiltered;
             // apply live filter
             var filterString = ToolStripTextBoxLibraryFilter.Text.Trim();
@@ -1141,7 +1230,7 @@ namespace ARKBreedingStats
             }
 
             // display new results
-            ShowCreaturesInListView(filteredList);
+            ShowCreaturesInListView(filteredList, unfilteredList);
 
             // update creatureBox
             creatureBoxListView.UpdateLabel();

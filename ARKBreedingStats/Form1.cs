@@ -3434,6 +3434,12 @@ namespace ARKBreedingStats
             (listViewLibrary.SelectedItems[0].Tag as Creature).ExportInfoGraphicToClipboard(_creatureCollection);
         }
 
+        private void copyColorCodesToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listViewLibrary.SelectedItems.Count == 0) return;
+            (listViewLibrary.SelectedItems[0].Tag as Creature).CopyColorCodesToClipboard(_creatureCollection);
+        }
+
         private void ToolStripMenuItemOpenWiki_Click(object sender, EventArgs e)
         {
             if (listViewLibrary.SelectedItems.Count == 0) return;
@@ -3500,6 +3506,11 @@ namespace ARKBreedingStats
 
                 speciesSelector1.InitializeSpeciesImages(Values.V.species);
             }
+        }
+
+        private void calcBreedingScoreButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

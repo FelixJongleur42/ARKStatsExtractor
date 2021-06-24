@@ -73,8 +73,16 @@ namespace ARKBreedingStats
                 compareResult = 0;
             else
             {
-                compareResult = double.TryParse(listViewX.SubItems[SortColumn].Text, out c1) &&
-                        double.TryParse(listViewY.SubItems[SortColumn].Text, out c2) ?
+                // EDIT remove thousands "." before parsing
+                bool parsed1 = double.TryParse(listViewX.SubItems[SortColumn].Text.Replace(".", ""), out c1);
+                bool parsed2 = double.TryParse(listViewY.SubItems[SortColumn].Text.Replace(".", ""), out c2);
+                // EDIT sort Mutation Counter absolute
+                if ((SortColumn == 10) && parsed1 && parsed2)
+                {
+                    c1 = Math.Abs(c1);
+                    c2 = Math.Abs(c2);
+                }
+                compareResult = compareResult = parsed1 && parsed2 ?
                                 Math.Sign(c1 - c2) :
                                 _objectCompare.Compare(listViewX.SubItems[SortColumn].Text, listViewY.SubItems[SortColumn].Text);
 
@@ -89,8 +97,16 @@ namespace ARKBreedingStats
                 if (listViewX.SubItems.Count <= _lastSortColumn) _lastSortColumn = 0;
                 // Compare the two items
                 // the first two columns are text, the others are int as string
-                compareResult = double.TryParse(listViewX.SubItems[_lastSortColumn].Text, out c1) &&
-                        double.TryParse(listViewY.SubItems[_lastSortColumn].Text, out c2) ?
+                // EDIT remove thousands "." before parsing
+                bool parsed1 = double.TryParse(listViewX.SubItems[_lastSortColumn].Text.Replace(".", ""), out c1);
+                bool parsed2 = double.TryParse(listViewY.SubItems[_lastSortColumn].Text.Replace(".", ""), out c2);
+                // EDIT sort Mutation Counter absolute
+                if ((_lastSortColumn == 10) && parsed1 && parsed2)
+                {
+                    c1 = Math.Abs(c1);
+                    c2 = Math.Abs(c2);
+                }
+                compareResult =  parsed1 && parsed2 ?
                                 Math.Sign(c1 - c2) :
                                 _objectCompare.Compare(listViewX.SubItems[_lastSortColumn].Text, listViewY.SubItems[_lastSortColumn].Text);
                 // if descending sort is selected, return negative result of compare operation

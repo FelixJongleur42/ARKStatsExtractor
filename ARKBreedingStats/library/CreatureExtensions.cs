@@ -256,5 +256,24 @@ namespace ARKBreedingStats.library
                     Clipboard.SetImage(bmp);
             }
         }
+
+        public static void CopyColorCodesToClipboard(this Creature creature, CreatureCollection cc = null)
+        {
+            if (creature == null) return;
+
+            string result = "";
+            for (int regionIndex = 0; regionIndex <= 5; regionIndex++)
+            {
+                if (creature.Species.EnabledColorRegions[regionIndex])
+                {
+                    if (result.Equals("") == false)
+                    {
+                        result += "-";
+                    }
+                    result += String.Format("{0:D3}", creature.colors[regionIndex]);
+                }
+            }
+            Clipboard.SetText(result);
+        }
     }
 }
